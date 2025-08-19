@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Details</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Game Details</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="games.html">Games</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <div class="container" id="game-container">
+    <p>Loading game...</p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCSDU9rtFzForMO2pz2TD3pNzb8mOBmisg",
+      authDomain: "twivthosted.firebaseapp.com",
+      projectId: "twivthosted",
+      storageBucket: "twivthosted.firebasestorage.app",
+      messagingSenderId: "367803204431",
+      appId: "1:367803204431:web:6f8a02c133e07c033abb3a",
+      measurementId: "G-M156JBWQJS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Get the game ID from the URL
+    const params = new URLSearchParams(window.location.search);
+    const gameId = params.get('id');
+
+    async function loadGame() {
+      const container = document.getElementById('game-container');
+      const gameDoc = await getDoc(doc(db, 'games', gameId));
+      if (!gameDoc.exists()) {
+        container.innerHTML = '<p>Game not found.</p>';
+        return;
+      }
+
+      const game = gameDoc.data();
+      container.innerHTML = `
+        <img src="${game.cover || 'default-cover.jpg'}" alt="${game.name}">
+        <h2>${game.name}</h2>
+        <p>${game.description}</p>
+        <p>Rating: ${game.rating !== undefined ? game.rating : 'N/A'}</p>
+        <button onclick="window.history.back()">Back to Games</button>
+      `;
+    }
+
+    loadGame();
+  </script>
+</body>
+</html>
