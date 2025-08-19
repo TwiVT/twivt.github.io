@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Twindex Games</title>
+  <title>TwiVT Hosted Games</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,22 +20,15 @@
   <div class="container">
     <h2>All Games</h2>
     <div class="game-card">
-      <img src="cover.jpg" alt="Game Cover">
-      <h3>Cool Game</h3>
-      <p>A short description of the game.</p>
-      <button>View Details</button>
-    </div>
-
-    <div class="game-card">
-      <img src="cover2.jpg" alt="Another Game">
-      <h3>Another Game</h3>
-      <p>Another quick description.</p>
-      <button>View Details</button>
+      <img src="placeholderCover.jpg" alt="Game Cover">
+      <h3>Hi</h3>
+      <p>How are you? :3</p>
+      <button>Peekaboo</button>
     </div>
   </div>
 
   <footer>
-    <p>&copy; 2025 My Game Site</p>
+    <p>&copy; 2025 TwiVT Hosted</p>
   </footer>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
@@ -55,6 +48,11 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const analytics = getAnalytics(app);
+  
+  function goToGame(id) {
+  // Pass the game ID via URL query parameter
+  window.location.href = `game.html?id=${id}`;
+}
 
   async function loadGames() {
     const container = document.querySelector('.container');
@@ -73,12 +71,11 @@
         <h3>${game.name || 'Unnamed Game'}</h3>
         <p>${game.description || 'No description available.'}</p>
         <p>Rating: ${game.rating !== undefined ? game.rating : 'N/A'}</p>
-        <button>View Details</button>
+        <button onclick="goToGame('${doc.id}')">View Details</button>
       `;
       container.appendChild(card);
     });
   }
-
 
   loadGames();
 </script>
