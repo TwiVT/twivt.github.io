@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Games - My Game Site</title>
+  <title>Twindex Games</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -37,6 +37,48 @@
   <footer>
     <p>&copy; 2025 My Game Site</p>
   </footer>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyCSDU9rtFzForMO2pz2TD3pNzb8mOBmisg",
+    authDomain: "twivthosted.firebaseapp.com",
+    projectId: "twivthosted",
+    storageBucket: "twivthosted.firebasestorage.app",
+    messagingSenderId: "367803204431",
+    appId: "1:367803204431:web:6f8a02c133e07c033abb3a",
+    measurementId: "G-M156JBWQJS"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const analytics = getAnalytics(app);
+
+  async function loadGames() {
+    const container = document.querySelector('.container');
+    const gamesCol = collection(db, 'games');
+    const gameSnapshot = await getDocs(gamesCol);
+
+    container.innerHTML = '<h2>All Games</h2>'; // clear existing cards
+
+    gameSnapshot.forEach(doc => {
+      const game = doc.data();
+
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.innerHTML = `
+        <img src="${game.cover}" alt="${game.name}">
+        <h3>${game.name}</h3>
+        <p>${game.description}</p>
+        <button>View Details</button>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  loadGames();
+</script>
 </body>
 </html>
