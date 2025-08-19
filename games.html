@@ -69,14 +69,16 @@
       const card = document.createElement('div');
       card.className = 'game-card';
       card.innerHTML = `
-        <img src="${game.cover}" alt="${game.name}">
-        <h3>${game.name}</h3>
-        <p>${game.description}</p>
+        <img src="${game.cover || 'default-cover.jpg'}" alt="${game.name || 'Unnamed Game'}">
+        <h3>${game.name || 'Unnamed Game'}</h3>
+        <p>${game.description || 'No description available.'}</p>
+        <p>Rating: ${game.rating !== undefined ? game.rating : 'N/A'}</p>
         <button>View Details</button>
       `;
       container.appendChild(card);
     });
   }
+
 
   loadGames();
 </script>
