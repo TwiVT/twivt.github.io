@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Profile</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Your Profile</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="games.html">Games</a>
+      <a href="about.html">About</a>
+      <a id="profile-link" href="profile.html">Login</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <!-- Login form -->
+    <div id="login-section">
+      <h2>Login</h2>
+      <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
+      <button id="login-btn">Login</button>
+      <button id="signup-btn">Sign Up</button>
+    </div>
+
+    <!-- Profile editor -->
+    <div id="profile-section" style="display:none;">
+      <h2>Edit Profile</h2>
+      <img id="pfp-preview" src="default-avatar.png" alt="Profile Picture" width="100">
+      <input type="file" id="pfp-input" accept="image/*">
+      <input type="text" id="username" placeholder="Enter username">
+      <button id="save-profile">Save Profile</button>
+      <button id="logout-btn">Logout</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 TwiVT Hosted</p>
+  </footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+  // 🔹 Replace with YOUR Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCSDU9rtFzForMO2pz2TD3pNzb8mOBmisg",
+    authDomain: "twivthosted.firebaseapp.com",
+    projectId: "twivthosted",
+    storageBucket: "twivthosted.firebasestorage.app",
+    messagingSenderId: "367803204431",
+    appId: "1:367803204431:web:6f8a02c133e07c033abb3a",
+    measurementId: "G-M156JBWQJS"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // 🔹 Replace with your Cloudinary details
+  const CLOUD_NAME = "YOUR_CLOUD_NAME";
+  const UPLOAD_PRESET = "YOUR_UNSIGNED_UPLOAD_PRESET";
+
+  const loginSection = document.getElementById("login-section");
+  const profileSection = document.getElementById("profile-section");
+  const profileLink = document.getElementById("profile-link");
+
+  const loginBtn = document.getElementById("login-btn");
+  const signupBtn = document.getElementById("signup-btn");
+  const logoutBtn = document.getElementById("logout-btn");
+  const saveProfileBtn = document.getElementById("save-profile");
+  const pfpInput = document.getElementById("pfp-input");
+  const pfpPreview = document.getElementById("pfp-preview");
+  const usernameInput = document.getElementById("username");
+
+  let uploadedPfpUrl = null;
+
+  // 🔹 Handle login
+  loginBtn.addEventListener("click", async () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    await signInWithEmailAndPassword(auth, email, password);
+  });
+
+  // 🔹 Handle signup
+  signupBtn.addEventListener("click", async () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    await createUserWithEmailAndPassword(auth, email, password);
+  });
+
+  // 🔹 Handle logout
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+  });
+
+  // 🔹 Upload PFP to Cloudinary
+  pfpInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+    uploadedPfpUrl = data.secure_url;
+    pfpPreview.src = uploadedPfpUrl;
+  });
+
+  // 🔹 Save profile to Firestore
+  saveProfileBtn.addEventListener("click", async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const username = usernameInput.value;
+    await setDoc(doc(db, "users", user.uid), {
+      username: username,
+      pfp: uploadedPfpUrl || pfpPreview.src
+    }, { merge: true });
+  });
+
+  // 🔹 Watch login state
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      loginSection.style.display = "none";
+      profileSection.style.display = "block";
+      profileLink.textContent = "Profile";
+
+      // Load user data
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        usernameInput.value = data.username || "";
+        if (data.pfp) {
+          pfpPreview.src = data.pfp;
+          uploadedPfpUrl = data.pfp;
+        }
+      }
+    } else {
+      loginSection.style.display = "block";
+      profileSection.style.display = "none";
+      profileLink.textContent = "Login";
+    }
+  });
+</script>
+</body>
+</html>
