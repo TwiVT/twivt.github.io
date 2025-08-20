@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login / Register - TwiVT Hosted</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>TwiVT Hosted</h1>
+    <nav>
+      <div class="nav-left">
+        <a href="index.html">Home</a>
+        <a href="games.html">Games</a>
+        <a href="about.html">About</a>
+      </div>
+      <div class="nav-right" id="user-nav">
+        <!-- JS will fill this -->
+      </div>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2>Login / Register</h2>
+
+    <form id="login-form">
+      <h3>Login</h3>
+      <input type="email" id="login-email" placeholder="Email" required>
+      <input type="password" id="login-password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+
+    <form id="register-form">
+      <h3>Register</h3>
+      <input type="text" id="register-username" placeholder="Username" required>
+      <input type="email" id="register-email" placeholder="Email" required>
+      <input type="password" id="register-password" placeholder="Password" required>
+      <button type="submit">Register</button>
+    </form>
+
+    <p id="error-message" style="color: red;"></p>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 TwiVT Hosted</p>
+  </footer>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCSDU9rtFzForMO2pz2TD3pNzb8mOBmisg",
+      authDomain: "twivthosted.firebaseapp.com",
+      projectId: "twivthosted",
+      storageBucket: "twivthosted.firebasestorage.app",
+      messagingSenderId: "367803204431",
+      appId: "1:367803204431:web:6f8a02c133e07c033abb3a",
+      measurementId: "G-M156JBWQJS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Handle login
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "index.html"; // redirect after login
+      } catch (error) {
+        document.getElementById("error-message").innerText = error.message;
+      }
+    });
+
+    // Handle register
+    document.getElementById("register-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("register-username").value;
+      const email = document.getElementById("register-email").value;
+      const password = document.getElementById("register-password").value;
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Add username to Firebase Auth profile
+        await updateProfile(user, {
+          displayName: username,
+          photoURL: "default-avatar.png" // you can later update this to let them upload
+        });
+
+        // Save to Firestore too (optional, but good for storing extra info)
+        await setDoc(doc(db, "users", user.uid), {
+          username: username,
+          email: email,
+          photoURL: "default-avatar.png"
+        });
+
+        window.location.href = "index.html"; // redirect after register
+      } catch (error) {
+        document.getElementById("error-message").innerText = error.message;
+      }
+    });
+  </script>
+</body>
+</html>
