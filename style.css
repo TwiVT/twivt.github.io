@@ -6,6 +6,7 @@
   --subtext-color: #cccccc;
   --btn-bg: #4c5bd4;
   --btn-hover: #6473f2;
+  --icon-glow: rgba(100, 115, 242, 0.8);
 
   /* Light mode colors */
   --bg-gradient-light: linear-gradient(135deg, #f0f0f0, #d9e4f5);
@@ -13,6 +14,7 @@
   --subtext-color-light: #555555;
   --btn-bg-light: #4c9ed4;
   --btn-hover-light: #65b8f2;
+  --icon-glow-light: rgba(101, 184, 242, 0.7);
 }
 
 /* ========= RESET ========= */
@@ -31,7 +33,7 @@ body {
   align-items: center;
   min-height: 100vh;
   text-align: center;
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.5s ease, color 0.5s ease;
 }
 
 body.light {
@@ -64,6 +66,7 @@ body.light {
   font-size: 1rem;
   color: var(--subtext-color);
   margin-bottom: 20px;
+  transition: color 0.5s ease;
 }
 
 body.light .bio {
@@ -81,14 +84,14 @@ body.light .bio {
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-content: center;
-  padding: 14px;
+  justify-content: flex-start;
+  padding: 14px 18px;
   border-radius: 12px;
   text-decoration: none;
   font-weight: 600;
   color: #fff;
   background: var(--btn-bg);
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .link-btn:hover {
@@ -96,9 +99,20 @@ body.light .bio {
   background: var(--btn-hover);
 }
 
+/* Icon styling */
 .link-btn .icon {
-  width: 22px;
-  height: 22px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  padding: 6px;
+  background: rgba(255,255,255,0.1);
+  box-shadow: 0 0 12px var(--icon-glow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.link-btn:hover .icon {
+  transform: scale(1.1);
+  box-shadow: 0 0 18px var(--icon-glow);
 }
 
 /* Light mode buttons */
@@ -111,19 +125,44 @@ body.light .link-btn:hover {
   background: var(--btn-hover-light);
 }
 
-/* Theme toggle button */
+body.light .link-btn .icon {
+  box-shadow: 0 0 12px var(--icon-glow-light);
+}
+
+body.light .link-btn:hover .icon {
+  box-shadow: 0 0 18px var(--icon-glow-light);
+}
+
+/* Theme toggle button (top right) */
 #theme-toggle {
-  margin-top: 20px;
-  padding: 10px 18px;
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: 42px;
+  height: 42px;
   border: none;
-  border-radius: 8px;
-  background: currentColor;
-  color: #fff;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-weight: bold;
-  transition: all 0.2s ease-in-out;
+  transition: background 0.3s ease;
+  z-index: 1000;
 }
 
 #theme-toggle:hover {
-  opacity: 0.8;
+  background: rgba(0,0,0,0.35);
+}
+
+#theme-toggle img {
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+  transition: transform 0.4s ease;
+}
+
+#theme-toggle:hover img {
+  transform: rotate(20deg) scale(1.1);
 }
