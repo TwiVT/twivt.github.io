@@ -7,11 +7,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Theme Toggle (top right, OUTSIDE container) -->
-  <button id="theme-toggle">
-    <img src="img/moon.svg" alt="Theme Icon" id="theme-icon">
-  </button>
-
   <div class="container">
     <!-- Profile Section -->
     <div class="profile">
@@ -40,22 +35,5 @@
       </a>
     </div>
   </div>
-
-  <script>
-    const toggle = document.getElementById('theme-toggle');
-    const icon = document.getElementById('theme-icon');
-
-    toggle.addEventListener('click', () => {
-      document.body.classList.toggle('light');
-
-      if (document.body.classList.contains('light')) {
-        icon.src = "img/sun.svg";
-        icon.alt = "Switch to Dark";
-      } else {
-        icon.src = "img/moon.svg";
-        icon.alt = "Switch to Light";
-      }
-    });
-  </script>
 </body>
 </html>
